@@ -5,7 +5,8 @@ from sensor_msgs.msg import Joy
 
 
 class JoyTools:
-
+    press = 1
+    
     class application:
         WIRELESS = 0
         WIRED = 1
@@ -40,8 +41,9 @@ class JoyTools:
             x = 0
             y = 0
 
-    def __init__(self, application):
+    def __init__(self, application, debug=False):
         self.select_application = application
+        self.debug = debug
 
     def joy_map(self, axes, buttons):
         """
@@ -117,14 +119,17 @@ class JoyTools:
             self.buttons.cross.x = axes[4]
             self.buttons.cross.y = axes[5]
 
-    def callback(self, msg):
+    def callback(self, msg, func=None):
+        os.system('clear')
         axes = list(msg.axes)
         buttons = list(msg.buttons)
         self.joy_map(axes, buttons)
-        self.print_debug()
+        if(self.debug):
+            self.print_debug()
+        if(func is not None):
+            func()
 
     def print_debug(self):
-        os.system('clear')
         status = ['not press', 'pressed']
         print("A:       " + status[self.buttons.A])
         print("B:       " + status[self.buttons.B])
@@ -134,6 +139,12 @@ class JoyTools:
         print("RB:      " + status[self.buttons.RB])
         print("LT:      " + str(self.buttons.LT))
         print("RT:      " + str(self.buttons.RT))
+        if self.select_application == self.application.LOGITECH_F710:
+            print("LT:      " + status[self.buttons.LT])
+            print("RT:      " + status[self.buttons.RT])
+        else:
+            print("LT:      " + str(self.buttons.LT))
+            print("RT:      " + str(self.buttons.RT))
         print("CROSS_X: " + str(self.buttons.cross.x))
         print("CROSS_Y: " + str(self.buttons.cross.y))
         print("LEFT_X:  " + str(self.buttons.stick.left.x))
@@ -142,7 +153,8 @@ class JoyTools:
         print("RIGHT_X: " + str(self.buttons.stick.right.x))
         print("RIGHT_Y: " + str(self.buttons.stick.right.y))
         print("RIGHT_C: " + status[self.buttons.stick.right.click])
-        print("POWER:   " + status[self.buttons.power])
+        if self.select_application != self.application.LOGITECH_F710:
+            print("POWER:   " + status[self.buttons.power])
         print("BACK:    " + status[self.buttons.back])
         print("START:   " + status[self.buttons.start])
 
