@@ -44,6 +44,12 @@ class JoyTools:
     def __init__(self, application, debug=False):
         self.select_application = application
         self.debug = debug
+        self.locked = True
+        if self.select_application == self.application.LOGITECH_F710:
+            self.is_RT_press = lambda x: True if x > 0 else False 
+        else:
+            self.is_RT_press = lambda x: True if x <= 0 else False 
+
 
     def joy_map(self, axes, buttons):
         """
@@ -121,13 +127,15 @@ class JoyTools:
 
     def callback(self, msg, func=None):
         os.system('clear')
+        # print(msg)
         axes = list(msg.axes)
         buttons = list(msg.buttons)
         self.joy_map(axes, buttons)
+        self.RT_PRESS = self.is_RT_press(self.buttons.RT)
         if(self.debug):
             self.print_debug()
         if(func is not None):
-            func()
+            self.locked = func(header=msg.header,locked=self.locked)
 
     def print_debug(self):
         status = ['not press', 'pressed']
