@@ -69,10 +69,13 @@ def run():
         elif(joy.buttons.RB == joy.press and joy.buttons.Y == joy.press):
             default_z = -1.9
         else:
-            if locked == False:
+            print('Press RT to control')
+            if default_z != 0:
+                call(message(header=joy.msg.header, seq=i,z=default_z))
+                i+=1
+            elif locked == False:
                 call(message(header=joy.msg.header,seq=i,reset=True))
                 i+=1
-            print('Press RT to control')
             locked = True
         sleep(0.1)
     print('End loop')
