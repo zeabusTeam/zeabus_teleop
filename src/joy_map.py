@@ -70,6 +70,8 @@ def run():
             default_z = -1.9
         else:
             print('Press RT to control')
+            print('Press RB+Y to set default_z = -1.9')
+            print('Press LB+Y to set default_z = 0')
             if default_z != 0:
                 call(message(header=joy.msg.header, seq=i,z=default_z))
                 i+=1
