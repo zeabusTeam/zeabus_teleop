@@ -38,14 +38,12 @@ def message(header, seq=0, x=None, y=None, z=None, yaw=None, reset=False):
 
 
 def run():
-    call = rospy.ServiceProxy('/control/thruster', SendControlCommand)
+    pub = rospy.Publisher('/control/thruster', SendControlCommand,queue_size=3)
+    # call = rospy.ServiceProxy('/control/thruster', SendControlCommand)
     locked = True
     default_z = 0
     i = 1
     while not rospy.is_shutdown():
-        os.system('clear')
-        print('Waiting for service')
-        call.wait_for_service()
         os.system('clear')
         print('default_z: ',default_z)
         if(joy.RT_PRESS):
@@ -56,7 +54,7 @@ def run():
                           z=convert.to_z(joy.buttons.A,default_z),
                           yaw=convert.to_yaw(joy.buttons.stick.right.x))
             if msg != []:
-                call(msg)
+                pub.publish(msg)
                 print(msg)
                 i+=1
             else:
@@ -73,10 +71,10 @@ def run():
             print('Press RB+Y to set default_z = -1.9')
             print('Press LB+Y to set default_z = 0')
             if default_z != 0:
-                call(message(header=joy.msg.header, seq=i,z=default_z))
+                pub.publish(message(header=joy.msg.header, seq=i,z=default_z))
                 i+=1
             elif locked == False:
-                call(message(header=joy.msg.header,seq=i,reset=True))
+                pub.publish(message(header=joy.msg.header,seq=i,reset=True))
                 i+=1
             locked = True
         sleep(0.1)
