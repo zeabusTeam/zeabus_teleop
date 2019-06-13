@@ -4,7 +4,7 @@ import os
 from sensor_msgs.msg import Joy
 from zeabus_utility.msg import ControlCommand
 from zeabus_utility.srv import SendControlCommand
-from joy_lib import JoyTools, Convert
+from teleop_lib import JoyTools, Convert
 from time import sleep
 
 
