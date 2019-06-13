@@ -167,10 +167,11 @@ class JoyTools:
 
 class Convert:
     def __init__(self):
-        self.X_MAX = 2.0
-        self.Y_MAX = 2.5
-        self.Z_MAX = 0.8
-        self.YAW_MAX = 0.5
+        from constant import *
+        self.X_MAX = X_MAX
+        self.Y_MAX = Y_MAX
+        self.Z_MAX = Z_MAX
+        self.YAW_MAX = YAW_MAX
 
     def to_x(self, inp):
         if abs(inp) < 1e-3:
