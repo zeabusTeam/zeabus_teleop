@@ -1,8 +1,8 @@
 class Convert:
     def __init__(self):
         self.X_MAX = 2.0
-        self.Y_MAX = 2.0
-        self.Z_MAX = 2.4
+        self.Y_MAX = 2.5
+        self.Z_MAX = 0.8
         self.YAW_MAX = 0.5
 
     def to_x(self, inp):
