@@ -4,8 +4,7 @@ import os
 from sensor_msgs.msg import Joy
 from zeabus_utility.msg import ControlCommand
 from zeabus_utility.srv import SendControlCommand
-from joy_lib import JoyTools
-from calculate import Convert
+from teleop_lib import JoyTools, Convert
 from time import sleep
 
 
@@ -47,18 +46,18 @@ def run():
         print('Waiting for service')
         call.wait_for_service()
         os.system('clear')
-        print('default_z: ',default_z)
+        print('default_z: ', default_z)
         if(joy.RT_PRESS):
             msg = message(header=joy.msg.header,
                           seq=i,
                           x=convert.to_x(joy.buttons.stick.left.y),
                           y=convert.to_y(joy.buttons.stick.left.x),
-                          z=convert.to_z(joy.buttons.A,default_z),
+                          z=convert.to_z(joy.buttons.A, default_z),
                           yaw=convert.to_yaw(joy.buttons.stick.right.x))
             if msg != []:
                 call(msg)
                 print(msg)
-                i+=1
+                i += 1
             else:
                 print('Waiting')
             locked = False
@@ -67,17 +66,17 @@ def run():
         elif(joy.buttons.LB == joy.press and joy.buttons.Y == joy.press):
             default_z = 0
         elif(joy.buttons.RB == joy.press and joy.buttons.Y == joy.press):
-            default_z = -1.9
+            default_z = -1.5
         else:
             print('Press RT to control')
-            print('Press RB+Y to set default_z = -1.9')
+            print('Press RB+Y to set default_z = -1.5')
             print('Press LB+Y to set default_z = 0')
             if default_z != 0:
-                call(message(header=joy.msg.header, seq=i,z=default_z))
-                i+=1
-            elif locked == False:
-                call(message(header=joy.msg.header,seq=i,reset=True))
-                i+=1
+                call(message(header=joy.msg.header, seq=i, z=default_z))
+                i += 1
+            elif not locked:
+                call(message(header=joy.msg.header, seq=i, reset=True))
+                i += 1
             locked = True
         sleep(0.1)
     print('End loop')

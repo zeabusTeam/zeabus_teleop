@@ -1,12 +1,9 @@
 #!/usr/bin/python
-import rospy
-import os
-from sensor_msgs.msg import Joy
 
 
 class JoyTools:
     press = 1
-    
+
     class application:
         WIRELESS = 0
         WIRED = 1
@@ -48,10 +45,9 @@ class JoyTools:
         self.RT_PRESS = False
         self.msg = None
         if self.select_application == self.application.LOGITECH_F710:
-            self.is_RT_press = lambda x: True if x > 0 else False 
+            self.is_RT_press = lambda x: True if x > 0 else False
         else:
-            self.is_RT_press = lambda x: True if x <= 0 else False 
-
+            self.is_RT_press = lambda x: True if x <= 0 else False
 
     def joy_map(self, axes, buttons):
         """
@@ -59,7 +55,7 @@ class JoyTools:
                 application:
                     - app.WIRELESS
                         - Microsoft Xbox 360 Wireless Controller for Linux
-                    - app.WIRED 
+                    - app.WIRED
                         - Microsoft Xbox 360 Wired Controller for Linux
                         - Incl. Logitech F310 joy
                     - app.LOGITECH_F710
@@ -165,3 +161,37 @@ class JoyTools:
         print("BACK:    " + status[self.buttons.back])
         print("START:   " + status[self.buttons.start])
 
+
+class Convert:
+    def __init__(self):
+        import constant
+        self.X_MAX = constant.X_MAX
+        self.Y_MAX = constant.Y_MAX
+        self.Z_MAX = constant.Z_MAX
+        self.YAW_MAX = constant.YAW_MAX
+
+    def to_x(self, inp):
+        if abs(inp) < 1e-3:
+            return None
+        sign = 1
+        return sign*inp*self.X_MAX
+
+    def to_y(self, inp):
+        if abs(inp) < 1e-3:
+            return None
+        sign = 1
+        return sign*inp*self.Y_MAX
+
+    def to_z(self, inp, default_z=0):
+        sign = -1
+        if abs(inp) < 1e-3 and default_z == 0:
+            return None
+        elif abs(inp) < 1e-3 and default_z != 0:
+            return default_z
+        return sign*(inp*self.Z_MAX)
+
+    def to_yaw(self, inp):
+        if abs(inp) < 1e-3:
+            return None
+        sign = 1
+        return sign*inp*self.YAW_MAX
