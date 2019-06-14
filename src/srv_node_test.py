@@ -1,7 +1,6 @@
 #!/usr/bin/python2.7
 
 import rospy
-from std_msgs.msg import Bool
 from zeabus_utility.srv import SendControlCommand, SendControlCommandResponse
 
 
