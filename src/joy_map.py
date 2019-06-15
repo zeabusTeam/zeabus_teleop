@@ -11,6 +11,14 @@ from time import sleep
 convert = Convert()
 
 
+def break_message(header, seq):
+    msg = ControlCommand()
+    msg.header = header
+    msg.header.seq = seq
+    msg.target = [0.0] * 6
+    msg.mask = [True] * 6
+
+
 def message(header, seq=0, x=None, y=None, z=None, yaw=None, reset=False):
     if(x is None and y is None and z is None and yaw is None and not reset):
         return []
@@ -67,6 +75,9 @@ def run():
             default_z = 0
         elif(joy.buttons.RB == joy.press and joy.buttons.Y == joy.press):
             default_z = convert.DEFAULT_Z
+        elif(joy.buttons.RB == joy.press and joy.buttons.start == joy.press):
+            call(break_message(header=joy.msg.header, seq=i))
+            i += 1
         else:
             print('Press RT to control')
             print('Press RB+Y to set default_z = ' + str(convert.DEFAULT_Z))
