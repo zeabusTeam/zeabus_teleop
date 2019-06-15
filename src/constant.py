@@ -1,0 +1,5 @@
+X_MAX = 2.0
+Y_MAX = 2.5
+Z_MAX = 2.5
+YAW_MAX = 0.8
+DEFAULT_Z = -1.5

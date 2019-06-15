@@ -4,12 +4,20 @@ import os
 from sensor_msgs.msg import Joy
 from zeabus_utility.msg import ControlCommand
 from zeabus_utility.srv import SendControlCommand
-from joy_lib import JoyTools
-from calculate import Convert
+from teleop_lib import JoyTools, Convert
 from time import sleep
 
 
 convert = Convert()
+
+
+def break_message(header, seq):
+    msg = ControlCommand()
+    msg.header = header
+    msg.header.seq = seq
+    msg.target = [0.0] * 6
+    msg.mask = [True] * 6
+    return msg
 
 
 def message(header, seq=0, x=None, y=None, z=None, yaw=None, reset=False):
@@ -38,8 +46,9 @@ def message(header, seq=0, x=None, y=None, z=None, yaw=None, reset=False):
 
 
 def run():
-    pub = rospy.Publisher('/control/thruster', SendControlCommand,queue_size=3)
+    pub = rospy.Publisher('/control/thruster', ControlCommand)
     # call = rospy.ServiceProxy('/control/thruster', SendControlCommand)
+    print("fuck")
     locked = True
     default_z = 0
     i = 1
@@ -51,12 +60,12 @@ def run():
                           seq=i,
                           x=convert.to_x(joy.buttons.stick.left.y),
                           y=convert.to_y(joy.buttons.stick.left.x),
-                          z=convert.to_z(joy.buttons.A,default_z),
+                          z=convert.to_z(joy.buttons.A, default_z),
                           yaw=convert.to_yaw(joy.buttons.stick.right.x))
             if msg != []:
                 pub.publish(msg)
                 print(msg)
-                i+=1
+                i += 1
             else:
                 print('Waiting')
             locked = False
@@ -65,11 +74,17 @@ def run():
         elif(joy.buttons.LB == joy.press and joy.buttons.Y == joy.press):
             default_z = 0
         elif(joy.buttons.RB == joy.press and joy.buttons.Y == joy.press):
-            default_z = -1.9
+            default_z = convert.DEFAULT_Z
+        elif(joy.buttons.RB == joy.press and joy.buttons.start == joy.press):
+            msg = break_message(header=joy.msg.header, seq=i)
+            pub.publish(msg)
+            print(msg)
+            i += 1
         else:
             print('Press RT to control')
-            print('Press RB+Y to set default_z = -1.9')
+            print('Press RB+Y to set default_z = ' + str(convert.DEFAULT_Z))
             print('Press LB+Y to set default_z = 0')
+            print('Press RB+START to force stop AUV')
             if default_z != 0:
                 pub.publish(message(header=joy.msg.header, seq=i,z=default_z))
                 i+=1
