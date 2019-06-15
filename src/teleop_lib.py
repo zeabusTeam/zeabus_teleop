@@ -169,6 +169,7 @@ class Convert:
         self.Y_MAX = constant.Y_MAX
         self.Z_MAX = constant.Z_MAX
         self.YAW_MAX = constant.YAW_MAX
+        self.DEFAULT_Z = constant.DEFAULT_Z
 
     def to_x(self, inp):
         if abs(inp) < 1e-3:
