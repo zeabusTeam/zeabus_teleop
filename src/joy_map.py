@@ -2,8 +2,8 @@
 import rospy
 import os
 from sensor_msgs.msg import Joy
-from zeabus_utility.msg import ControlCommand, TelemetryStruct
-from zeabus_utility.srv import SendControlCommand, Telemetry
+from zeabus_utility.msg import ControlCommand, StructTelemetry
+from zeabus_utility.srv import SendControlCommand, ServiceGetTelemetry
 from teleop_lib import JoyTools, Convert
 from time import sleep
 
@@ -53,7 +53,7 @@ def message(header, seq=0, x=None, y=None, z=None, yaw=None, reset=False):
 
 def run():
     pub = rospy.Publisher('/control/thruster', ControlCommand)
-    bat_check_call = rospy.ServiceProxy('/hardware/thruster_feedback', Telemetry)
+    bat_check_call = rospy.ServiceProxy('/hardware/thruster_feedback', ServiceGetTelemetry)
     # call = rospy.ServiceProxy('/control/thruster', SendControlCommand)
     locked = True
     not_break_rule = True
