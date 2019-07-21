@@ -17,6 +17,7 @@ def calculate_voltage(data):
         sum_voltage += i.voltage
     return sum_voltage/len(data)
 
+
 def break_message(header, seq):
     msg = ControlCommand()
     msg.header = header
@@ -53,7 +54,8 @@ def message(header, seq=0, x=None, y=None, z=None, yaw=None, reset=False):
 
 def run():
     pub = rospy.Publisher('/control/thruster', ControlCommand)
-    bat_check_call = rospy.ServiceProxy('/hardware/thruster_feedback', ServiceGetTelemetry)
+    bat_check_call = rospy.ServiceProxy(
+        '/hardware/thruster_feedback', ServiceGetTelemetry)
     # call = rospy.ServiceProxy('/control/thruster', SendControlCommand)
     locked = True
     not_break_rule = True
@@ -62,7 +64,7 @@ def run():
     i = 1
     while not rospy.is_shutdown():
         os.system('clear')
-        print('default_z: ',default_z)
+        print('default_z: ', default_z)
         print('break_rule', not_break_rule)
         print('Last check battery', last_battery)
         if(joy.RT_PRESS and not_break_rule):
@@ -79,10 +81,6 @@ def run():
             else:
                 print('Waiting')
             locked = False
-        elif(joy.buttons.power == joy.press):
-            print('checking battery')
-            response = bat_check_call()
-            last_battery = calculate_voltage(response.telemetry)
         elif(joy.buttons.LB == joy.press and joy.buttons.start == joy.press):
             not_break_rule = True
         elif(joy.buttons.RB == joy.press and joy.buttons.start == joy.press):
@@ -98,25 +96,34 @@ def run():
             default_z = 0
         elif(joy.buttons.RB == joy.press and joy.buttons.Y == joy.press):
             default_z = convert.DEFAULT_Z
+        elif(joy.buttons.power == joy.press):
+            print('checking battery')
+            response = bat_check_call()
+            last_battery = calculate_voltage(response.telemetry)
+        elif(joy.select_application == joy.application.LOGITECH_F710
+             and joy.buttons.back == joy.press):
+            print('checking battery')
+            response = bat_check_call()
+            last_battery = calculate_voltage(response.telemetry)
         else:
             print('Press RT to control')
             print('Press RB+Y to set default_z = ' + str(convert.DEFAULT_Z))
             print('Press LB+Y to set default_z = 0')
             print('Press RB+START to disable force stop AUV')
             print('Press LB+START to enable force stop AUV')
-            print('Press power to check battery (F310 only)')
+            print('Press power (F310), BACK (F710) to check battery')
             if default_z != 0:
-                pub.publish(message(header=joy.msg.header, seq=i,z=default_z))
-                i+=1
+                pub.publish(message(header=joy.msg.header, seq=i, z=default_z))
+                i += 1
             elif locked == False:
-                pub.publish(message(header=joy.msg.header,seq=i,reset=True))
-                i+=1
+                pub.publish(message(header=joy.msg.header, seq=i, reset=True))
+                i += 1
             locked = True
         sleep(0.1)
     print('End loop')
 
 
-joy = JoyTools(JoyTools.application.LOGITECH_F310, debug=False)
+joy = JoyTools(JoyTools.application.LOGITECH_F710, debug=False)
 
 
 if __name__ == '__main__':
