@@ -183,13 +183,15 @@ class Convert:
         sign = 1
         return sign*inp*self.Y_MAX
 
-    def to_z(self, inp, default_z=0):
+    def to_z(self, down_input, up_input, default_z=0):
         sign = -1
-        if abs(inp) < 1e-3 and default_z == 0:
+        if abs(up_input) == 1:
+            return 1
+        elif abs(down_input) < 1e-3 and default_z == 0:
             return None
-        elif abs(inp) < 1e-3 and default_z != 0:
+        elif abs(down_input) < 1e-3 and default_z != 0:
             return default_z
-        return sign*(inp*self.Z_MAX)
+        return sign*(down_input*self.Z_MAX)
 
     def to_yaw(self, inp):
         if abs(inp) < 1e-3:

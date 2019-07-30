@@ -59,20 +59,20 @@ def run():
     # call = rospy.ServiceProxy('/control/thruster', SendControlCommand)
     locked = True
     not_break_rule = True
-    last_battery = None
+    last_battery = -1.0
     default_z = 0
     i = 1
     while not rospy.is_shutdown():
         os.system('clear')
         print('default_z: ', default_z)
         print('break_rule', not_break_rule)
-        print('Last check battery', last_battery)
+        print('(Last check battery, {:.4f})'.format(last_battery))
         if(joy.RT_PRESS and not_break_rule):
             msg = message(header=joy.msg.header,
                           seq=i,
                           x=convert.to_x(joy.buttons.stick.left.y),
                           y=convert.to_y(joy.buttons.stick.left.x),
-                          z=convert.to_z(joy.buttons.A, default_z),
+                          z=convert.to_z(joy.buttons.A, joy.buttons.B, default_z),
                           yaw=convert.to_yaw(joy.buttons.stick.right.x))
             if msg != []:
                 pub.publish(msg)
@@ -111,7 +111,10 @@ def run():
             print('Press LB+Y to set default_z = 0')
             print('Press RB+START to disable force stop AUV')
             print('Press LB+START to enable force stop AUV')
-            print('Press power (F310), BACK (F710) to check battery')
+            if joy.select_application == joy.application.LOGITECH_F710:
+                print('Press BACK to check battery (F710)')
+            else:
+                print('Press power to check battery (F310)')
             if default_z != 0:
                 pub.publish(message(header=joy.msg.header, seq=i, z=default_z))
                 i += 1
